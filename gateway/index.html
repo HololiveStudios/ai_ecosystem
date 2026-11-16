@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecossistema Inteligente Local</title>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
+        h1 { color: #bb86fc; }
+        .container { max-width: 800px; margin: auto; }
+        textarea, input { width: 100%; padding: 10px; margin-top: 10px; background: #1e1e1e; border: 1px solid #333; color: #fff; }
+        button { background: #bb86fc; color: #121212; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer; font-weight: bold; }
+        pre { background: #1e1e1e; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Painel do Ecossistema Local</h1>
+        <label>Projeto Ativo:</label>
+        <input type="text" id="projectId" value="meu_projeto">
+        
+        <label>Comando ou Prompt:</label>
+        <textarea id="prompt" rows="4">/gcc --version</textarea>
+        
+        <button onclick="sendCommand()">Enviar Comando</button>
+        
+        <h3>Resposta:</h3>
+        <pre id="output">Aguardando execução...</pre>
+    </div>
+
+    <script>
+        async function sendCommand() {
+            const projectId = document.getElementById('projectId').value;
+            const prompt = document.getElementById('prompt').value;
+            const outputEl = document.getElementById('output');
+            
+            outputEl.innerText = "Processando...";
+            
+            try {
+                const res = await fetch('/api/v1/command', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_id: projectId, prompt: prompt })
+                });
+                const data = await res.json();
+                outputEl.innerText = data.response || JSON.stringify(data, null, 2);
+            } catch (err) {
+                outputEl.innerText = "Erro: " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
